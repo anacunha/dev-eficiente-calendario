@@ -28,3 +28,6 @@ hs_err_pid*
 # IDEA
 .idea/
 out/
+
+# Maven
+target/
