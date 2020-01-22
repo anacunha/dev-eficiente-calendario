@@ -1,5 +1,6 @@
 package br.com.deveficiente.calendario.model;
 
+import br.com.deveficiente.calendario.configuration.security.Password;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
@@ -33,8 +34,8 @@ public class Usuario {
     @NotNull
     private final LocalDateTime dataCadastro = LocalDateTime.now();
 
-    public Usuario(final String login, final String senha) {
+    public Usuario(final String login, final Password password) {
         this.login = login;
-        this.senha = senha;
+        this.senha = password.getHash();
     }
 }
