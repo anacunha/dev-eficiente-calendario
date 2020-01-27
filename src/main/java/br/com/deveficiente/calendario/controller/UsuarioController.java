@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 @RestController
@@ -17,8 +18,11 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @PostMapping("/api/usuario")
+    @Transactional
     public void cadastra(@RequestBody @Valid final NovoUsuarioForm form) {
         final Usuario usuario = form.toModel();
         usuarioRepository.save(usuario);
+
+        // TODO Cria Agenda default do usuário
     }
 }
