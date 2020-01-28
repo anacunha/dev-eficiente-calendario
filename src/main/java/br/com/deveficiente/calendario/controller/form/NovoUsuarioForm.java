@@ -21,13 +21,18 @@ public class NovoUsuarioForm {
     @Length(min = 6)
     private final String senha;
 
-    public NovoUsuarioForm(@NotBlank @Email final String login, @NotBlank @Length(min = 6) final String senha) {
+    @NotBlank
+    private final String nome;
+
+    public NovoUsuarioForm(@NotBlank @Email final String login, @NotBlank @Length(min = 6) final String senha,
+                           @NotBlank final String nome) {
         this.login = login;
         this.senha = senha;
+        this.nome = nome;
     }
 
     public Usuario toModel() {
         final Password password = new Password(this.senha, IS_HASHED);
-        return new Usuario(this.login, password);
+        return new Usuario(this.login, password, this.nome);
     }
 }

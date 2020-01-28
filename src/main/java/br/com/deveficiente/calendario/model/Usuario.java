@@ -30,12 +30,20 @@ public class Usuario {
     @Length(min = 6)
     private final String senha;
 
+    @NotBlank
+    private final String nome;
+
     @PastOrPresent
     @NotNull
     private final LocalDateTime dataCadastro = LocalDateTime.now();
 
-    public Usuario(final String login, final Password password) {
+    public Usuario(final String login, final Password password, final String nome) {
         this.login = login;
         this.senha = password.getHash();
+        this.nome = nome;
+    }
+
+    public String getNome() {
+        return nome;
     }
 }
