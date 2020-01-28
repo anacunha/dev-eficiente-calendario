@@ -20,15 +20,19 @@ public class Agenda {
     private Long id;
 
     @NotBlank
-    private final String nome;
+    private String nome;
 
     @Length(max = 255)
     @NotBlank
-    private final String descricao;
+    private String descricao;
 
-    @ManyToOne
     @NotNull
-    private final Usuario dono;
+    @ManyToOne
+    private Usuario dono;
+
+    @Deprecated
+    public Agenda() {
+    }
 
     public Agenda(final Usuario dono) {
         this.nome = dono.getNome();

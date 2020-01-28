@@ -1,5 +1,12 @@
 package br.com.deveficiente.calendario.controller.form;
 
+import br.com.deveficiente.calendario.controller.exception.AgendaNotFoundException;
+import br.com.deveficiente.calendario.controller.exception.UsuarioNotFoundException;
+import br.com.deveficiente.calendario.model.Agenda;
+import br.com.deveficiente.calendario.model.Evento;
+import br.com.deveficiente.calendario.model.Usuario;
+import br.com.deveficiente.calendario.repository.AgendaRepository;
+import br.com.deveficiente.calendario.repository.UsuarioRepository;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.hibernate.validator.constraints.Length;
 
@@ -9,6 +16,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class NovoEventoForm {
@@ -25,11 +34,11 @@ public class NovoEventoForm {
     @NotNull
     private LocalDateTime termino;
 
-    private List<@Email String> emailsConvidados;
-
     @NotBlank
     @Length(max = 255)
     private String descricao;
+
+    private List<@Email String> emailsConvidados;
 
     @NotNull
     private Long idAgenda;
@@ -58,20 +67,20 @@ public class NovoEventoForm {
         this.termino = termino;
     }
 
-    public List<String> getEmailsConvidados() {
-        return emailsConvidados;
-    }
-
-    public void setEmailsConvidados(final List<String> emailsConvidados) {
-        this.emailsConvidados = emailsConvidados;
-    }
-
     public String getDescricao() {
         return descricao;
     }
 
     public void setDescricao(final String descricao) {
         this.descricao = descricao;
+    }
+
+    public List<String> getEmailsConvidados() {
+        return emailsConvidados;
+    }
+
+    public void setEmailsConvidados(final List<String> emailsConvidados) {
+        this.emailsConvidados = emailsConvidados;
     }
 
     public Long getIdAgenda() {
@@ -82,15 +91,22 @@ public class NovoEventoForm {
         this.idAgenda = idAgenda;
     }
 
-    @Override
-    public String toString() {
-        return "NovoEventoForm{" +
-                "titulo='" + titulo + '\'' +
-                ", inico=" + inico +
-                ", termino=" + termino +
-                ", emailsConvidados=" + emailsConvidados +
-                ", descricao='" + descricao + '\'' +
-                ", idAgenda=" + idAgenda +
-                '}';
+    public Evento toModel(final AgendaRepository agendaRepository, final UsuarioRepository usuarioRepository,
+                          final Usuario dono) {
+        final Agenda agenda = agendaRepository.findById(idAgenda).orElseThrow(agendaNotFoundException(idAgenda));
+
+        final List<Usuario> convidados = emailsConvidados.stream()
+                .map(email -> usuarioRepository.findByLogin(email).orElseThrow(usuarioNotFoundException(email)))
+                .collect(Collectors.toList());
+
+        return new Evento(titulo, inico, termino, descricao, convidados, agenda, dono);
+    }
+
+    private Supplier<AgendaNotFoundException> agendaNotFoundException(final Long id) {
+        return () -> new AgendaNotFoundException("Agenda com id " + id + " não existe.");
+    }
+
+    private Supplier<UsuarioNotFoundException> usuarioNotFoundException(final String email) {
+        return () -> new UsuarioNotFoundException("Usuário com email " + email + " não existe.");
     }
 }

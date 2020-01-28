@@ -1,6 +1,10 @@
 package br.com.deveficiente.calendario.controller;
 
 import br.com.deveficiente.calendario.controller.form.NovoEventoForm;
+import br.com.deveficiente.calendario.model.Evento;
+import br.com.deveficiente.calendario.model.Usuario;
+import br.com.deveficiente.calendario.repository.AgendaRepository;
+import br.com.deveficiente.calendario.repository.EventoRepository;
 import br.com.deveficiente.calendario.repository.UsuarioRepository;
 import br.com.deveficiente.calendario.validator.PeriodoEventoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,12 @@ import javax.validation.Valid;
 public class EventoController {
 
     @Autowired
+    private AgendaRepository agendaRepository;
+
+    @Autowired
+    private EventoRepository eventoRepository;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @InitBinder
@@ -27,12 +37,9 @@ public class EventoController {
     @PostMapping("/api/evento")
     @Transactional
     public void cria(@RequestBody @Valid final NovoEventoForm form) {
-        System.out.println(form);
-
-        // TODO Validar lista de e-mails
-        // TODO Carregar Usuário logado
-        // TODO Carregar Agenda a partir do id
-        // TODO Criar Evento
-        // TODO Salvar Evento
+        // TODO Receber Usuário pelo método após habilitar autenticação via token
+        final Usuario usuario = usuarioRepository.findByLogin("ana@email.com").get();
+        final Evento evento = form.toModel(agendaRepository, usuarioRepository, usuario);
+        eventoRepository.save(evento);
     }
 }

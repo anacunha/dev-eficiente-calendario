@@ -24,18 +24,22 @@ public class Usuario {
     @NotBlank
     @Email
     @Column(unique = true)
-    private final String login;
+    private String login;
 
     @NotBlank
     @Length(min = 6)
-    private final String senha;
+    private String senha;
 
     @NotBlank
-    private final String nome;
+    private String nome;
 
     @PastOrPresent
     @NotNull
     private final LocalDateTime dataCadastro = LocalDateTime.now();
+
+    @Deprecated
+    public Usuario() {
+    }
 
     public Usuario(final String login, final Password password, final String nome) {
         this.login = login;
