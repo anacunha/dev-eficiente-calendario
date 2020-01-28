@@ -42,4 +42,8 @@ public class Usuario {
         this.senha = password.getHash();
         this.nome = nome;
     }
+
+    public String getNome() {
+        return nome;
+    }
 }

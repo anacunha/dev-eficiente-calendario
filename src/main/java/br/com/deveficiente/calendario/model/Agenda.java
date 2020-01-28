@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class Agenda {
 
+    private static final String DESCRICAO_DEFAULT = "Agenda %s";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,9 +30,9 @@ public class Agenda {
     @NotNull
     private final Usuario dono;
 
-    public Agenda(final String nome, final String descricao, final Usuario dono) {
-        this.nome = nome;
-        this.descricao = descricao;
+    public Agenda(final Usuario dono) {
+        this.nome = dono.getNome();
+        this.descricao = String.format(DESCRICAO_DEFAULT, dono.getNome());
         this.dono = dono;
     }
 }

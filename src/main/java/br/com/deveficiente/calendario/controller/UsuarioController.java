@@ -1,7 +1,9 @@
 package br.com.deveficiente.calendario.controller;
 
 import br.com.deveficiente.calendario.controller.form.NovoUsuarioForm;
+import br.com.deveficiente.calendario.model.Agenda;
 import br.com.deveficiente.calendario.model.Usuario;
+import br.com.deveficiente.calendario.repository.AgendaRepository;
 import br.com.deveficiente.calendario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,9 @@ import javax.validation.Valid;
 public class UsuarioController {
 
     @Autowired
+    private AgendaRepository agendaRepository;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @PostMapping("/api/usuario")
@@ -23,6 +28,7 @@ public class UsuarioController {
         final Usuario usuario = form.toModel();
         usuarioRepository.save(usuario);
 
-        // TODO Cria Agenda default do usuário
+        final Agenda agendaUsuario = new Agenda(usuario);
+        agendaRepository.save(agendaUsuario);
     }
 }
