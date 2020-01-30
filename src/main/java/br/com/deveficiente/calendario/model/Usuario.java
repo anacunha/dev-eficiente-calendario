@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Usuario {
@@ -24,18 +25,22 @@ public class Usuario {
     @NotBlank
     @Email
     @Column(unique = true)
-    private final String login;
+    private String login;
 
     @NotBlank
     @Length(min = 6)
-    private final String senha;
+    private String senha;
 
     @NotBlank
-    private final String nome;
+    private String nome;
 
     @PastOrPresent
     @NotNull
     private final LocalDateTime dataCadastro = LocalDateTime.now();
+
+    @Deprecated
+    public Usuario() {
+    }
 
     public Usuario(final String login, final Password password, final String nome) {
         this.login = login;
@@ -45,5 +50,18 @@ public class Usuario {
 
     public String getNome() {
         return nome;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(login, usuario.login);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login);
     }
 }

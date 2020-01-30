@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -19,16 +19,20 @@ public class Agenda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
-    private final String nome;
+    @NotBlank
+    private String nome;
 
     @Length(max = 255)
-    @NotEmpty
-    private final String descricao;
+    @NotBlank
+    private String descricao;
 
-    @ManyToOne
     @NotNull
-    private final Usuario dono;
+    @ManyToOne
+    private Usuario dono;
+
+    @Deprecated
+    public Agenda() {
+    }
 
     public Agenda(final Usuario dono) {
         this.nome = dono.getNome();
