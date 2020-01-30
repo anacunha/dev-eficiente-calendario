@@ -1,7 +1,5 @@
 package br.com.deveficiente.calendario.controller.form;
 
-import br.com.deveficiente.calendario.controller.exception.AgendaNotFoundException;
-import br.com.deveficiente.calendario.controller.exception.UsuarioNotFoundException;
 import br.com.deveficiente.calendario.model.Agenda;
 import br.com.deveficiente.calendario.model.Evento;
 import br.com.deveficiente.calendario.model.Usuario;
@@ -15,11 +13,12 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 public class NovoEventoForm {
 
     @NotBlank
@@ -38,7 +37,7 @@ public class NovoEventoForm {
     @Length(max = 255)
     private String descricao;
 
-    private List<@Email String> emailsConvidados;
+    private List<@Email String> emailsConvidados = new ArrayList<>();
 
     @NotNull
     private Long idAgenda;
@@ -93,20 +92,17 @@ public class NovoEventoForm {
 
     public Evento toModel(final AgendaRepository agendaRepository, final UsuarioRepository usuarioRepository,
                           final Usuario dono) {
-        final Agenda agenda = agendaRepository.findById(idAgenda).orElseThrow(agendaNotFoundException(idAgenda));
+        final Agenda agenda = agendaRepository.findById(idAgenda)
+                .orElseThrow(() -> new IllegalArgumentException("Agenda com id " + idAgenda + " não existe"));
 
-        final List<Usuario> convidados = emailsConvidados.stream()
-                .map(email -> usuarioRepository.findByLogin(email).orElseThrow(usuarioNotFoundException(email)))
-                .collect(Collectors.toList());
+        final Set<Usuario> convidados = emailsConvidados.stream()
+                .map(email -> usuarioRepository.findByLogin(email).get())
+                .collect(Collectors.toSet());
 
         return new Evento(titulo, inico, termino, descricao, convidados, agenda, dono);
     }
 
-    private Supplier<AgendaNotFoundException> agendaNotFoundException(final Long id) {
-        return () -> new AgendaNotFoundException("Agenda com id " + id + " não existe.");
-    }
-
-    private Supplier<UsuarioNotFoundException> usuarioNotFoundException(final String email) {
-        return () -> new UsuarioNotFoundException("Usuário com email " + email + " não existe.");
+    public boolean isTerminoAfterInicio() {
+        return termino.isAfter(inico);
     }
 }

@@ -12,7 +12,8 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Evento {
@@ -38,7 +39,7 @@ public class Evento {
     private final String descricao;
 
     @ManyToMany
-    private final List<Usuario> convidados;
+    private final Set<Usuario> convidados = new HashSet<>();
 
     @NotNull
     @ManyToOne
@@ -50,13 +51,13 @@ public class Evento {
 
     public Evento(@NotBlank @Length(max = 100) final String titulo, @Future @NotNull final LocalDateTime inico,
                   @Future @NotNull final LocalDateTime termino, @NotBlank @Length(max = 255) final String descricao,
-                  final List<Usuario> convidados, @NotNull final Agenda agenda,
+                  final Set<Usuario> convidados, @NotNull final Agenda agenda,
                   @NotNull final Usuario dono) {
         this.titulo = titulo;
         this.inico = inico;
         this.termino = termino;
         this.descricao = descricao;
-        this.convidados = convidados;
+        this.convidados.addAll(convidados);
         this.agenda = agenda;
         this.dono = dono;
     }

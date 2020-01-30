@@ -6,6 +6,7 @@ import br.com.deveficiente.calendario.model.Usuario;
 import br.com.deveficiente.calendario.repository.AgendaRepository;
 import br.com.deveficiente.calendario.repository.EventoRepository;
 import br.com.deveficiente.calendario.repository.UsuarioRepository;
+import br.com.deveficiente.calendario.validator.ConvidadosEventoValidator;
 import br.com.deveficiente.calendario.validator.PeriodoEventoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
@@ -31,7 +32,7 @@ public class EventoController {
 
     @InitBinder
     public void init(final WebDataBinder webDataBinder) {
-        webDataBinder.addValidators(new PeriodoEventoValidator());
+        webDataBinder.addValidators(new PeriodoEventoValidator(), new ConvidadosEventoValidator(usuarioRepository));
     }
 
     @PostMapping("/api/evento")
